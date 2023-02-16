@@ -1,0 +1,28 @@
+---
+title: "Lab 6"
+author: "Max Settineri"
+date: "2023-02-16"
+output: 
+  html_document:
+    code_folding: show
+---
+
+```{r setup, include=FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+library(tidyverse)
+library(janitor)
+library(palmerpenguins)
+
+# for cluster analysis
+library(NbClust)
+library(cluster)
+library(factoextra)
+library(dendextend)
+library(ggdendro)
+```
+
+# Intro to cluster analysis - k-means, hierarchical
+
+## Part 1: K-means clustering
+=
