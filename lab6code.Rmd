@@ -121,4 +121,68 @@ peng_cut_hc <- cutree(peng_hc_complete, 3)
 table(peng_cut_hc, penguins_complete$species)
 ```
 
-## 
+## World bank data: read in and simplify
+
+```{r}
+wb_env <- read_csv(here::here('data', 'wb_env.csv'))
+
+wb_ghg_20 <- wb_env %>% 
+  slice_max(n = 20, ghg)
+
+summary(wb_ghg_20)
+
+wb_scaled <- wb_ghg_20 %>% 
+  select(3:7) %>% 
+  scale()
+
+summary(wb_scaled)
+
+rownames(wb_scaled) <- wb_ghg_20$name 
+```
+
+### Find the Euclidean distances
+
+```{r}
+euc_distance <- dist(wb_scaled, method = 'euclidean')
+euc_distance
+```
+
+### Perform hierarchical clustering with complete linkage
+
+```{r}
+hc_complete <- hclust(euc_distance, method = 'complete')
+plot(hc_complete, cex = .6, hang = -.1)
+```
+
+### Perform hierarchical clustering by single linkage
+
+```{r}
+hc_single <- hclust(euc_distance, method = 'single')
+plot(hc_single, cex = .6, hang = -.1)
+```
+
+### Make a tanglegram
+
+```{r}
+dend_complete <- as.dendrogram(hc_complete)
+dend_single <- as.dendrogram(hc_single)
+
+tanglegram(dend_complete, dend_single)
+
+entanglement(dend_complete, dend_single)
+
+untangle(dend_complete, dend_single, method = 'step1side') %>% 
+  entanglement()
+
+untangle(dend_complete, dend_single, method = 'step1side') %>%
+  tanglegram(common_subtrees_color_branches = TRUE)
+```
+
+### Let's make a dendrogram in ggplot
+
+```{r}
+ggdendrogram(hc_complete, rotate = TRUE) +
+  theme_minimal() +
+  labs(x = 'Country')
+```
+
